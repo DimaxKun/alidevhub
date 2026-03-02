@@ -30,11 +30,7 @@ function logout() {
           {{ link.name }}
         </router-link>
         <template v-if="auth.isLoggedIn">
-          <router-link
-            v-if="auth.user"
-            :to="`/author/${auth.user._id}`"
-            class="user-name nav-link"
-          >
+          <router-link v-if="auth.user" :to="`/author/${auth.user._id}`" class="user-name nav-link">
             {{ auth.user.username }}
           </router-link>
           <button type="button" class="btn btn-ghost btn-sm" @click="logout">Logout</button>
@@ -80,7 +76,9 @@ function logout() {
 
 .nav-links {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: .8rem;
 }
 
 .nav-link {
@@ -106,9 +104,8 @@ function logout() {
 @media (min-width: 768px) {
   .nav-links {
     display: flex;
-  align-items: center;
-    gap: 1.5rem;       
+    align-items: center;
+    gap: 1.5rem;
   }
 }
-
 </style>
