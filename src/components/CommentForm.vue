@@ -20,23 +20,32 @@ async function onSubmit() {
 </script>
 
 <template>
-  <form @submit.prevent="onSubmit" class="comment-form">
-    <div class="form-group">
-      <label for="comment">Add a comment</label>
-      <textarea id="comment" v-model="comment" placeholder="Write your comment…" rows="3" required></textarea>
+  <form @submit.prevent="onSubmit" class="mt-3">
+    <div class="mb-3">
+      <label for="comment" class="form-label fw-medium">Add a comment</label>
+      <textarea
+        id="comment"
+        v-model="comment"
+        class="form-control"
+        rows="3"
+        placeholder="Write your comment…"
+        required
+      ></textarea>
     </div>
-    <button type="submit" class="btn btn-primary" :disabled="loading">
+    <button type="submit" class="btn btn-success" :disabled="loading">
       {{ loading ? 'Posting…' : 'Post comment' }}
     </button>
   </form>
 </template>
 
 <style scoped>
-.comment-form {
-  margin-top: 1rem;
+.form-control {
+  background-color: #25252D;
+  color: #e4e4e7;
 }
 
-.comment-form .form-group {
-  margin-bottom: 0.75rem;
+.form-control::placeholder {
+  color: #71717a;
 }
+
 </style>

@@ -22,90 +22,69 @@ function logout() {
 </script>
 
 <template>
-  <header class="navbar">
-    <div class="navbar-inner">
-      <router-link to="/" class="brand">AliDevHub</router-link>
-      <nav class="nav-links">
-        <router-link v-for="link in navLinks" :key="link.path" :to="link.path" class="nav-link">
-          {{ link.name }}
-        </router-link>
-        <template v-if="auth.isLoggedIn">
-          <router-link v-if="auth.user" :to="`/author/${auth.user._id}`" class="user-name nav-link">
-            {{ auth.user.username }}
-          </router-link>
-          <button type="button" class="btn btn-ghost btn-sm" @click="logout">Logout</button>
-        </template>
-        <template v-else>
-          <router-link to="/login" class="btn btn-ghost btn-sm">Login</router-link>
-          <router-link to="/register" class="btn btn-primary btn-sm">Register</router-link>
-        </template>
-      </nav>
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+      <router-link to="/" class="navbar-brand fw-bold fs-5">AliDevHub</router-link>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse gap-3" id="mainNav">
+
+        <ul class="navbar-nav ms-auto gap-3">
+          <li v-for="link in navLinks" :key="link.path" class="nav-item">
+            <router-link :to="link.path" class="nav-link fw-medium">
+              {{ link.name }}
+            </router-link>
+          </li>
+        </ul>
+
+        <ul class="navbar-nav gap-3">
+          <li v-if="auth.isLoggedIn && auth.user" class="nav-item">
+            <router-link :to="`/author/${auth.user._id}`" class="nav-link text-muted small">
+              {{ auth.user.username }}
+            </router-link>
+          </li>
+          <li v-if="auth.isLoggedIn" class="nav-item">
+            <button type="button" class="btn btn-outline-danger btn-sm mt-1" @click="logout">
+              Logout
+            </button>
+          </li>
+          <template v-else>
+            <li class="nav-item">
+              <router-link to="/login" class="btn btn-outline-light btn-sm">
+                Login
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/register" class="btn btn-success btn-sm">
+                Register
+              </router-link>
+            </li>
+          </template>
+        </ul>
+      </div>
     </div>
-  </header>
+  </nav>
 </template>
 
 <style scoped>
-.navbar {
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+
+.navbar{
+  background-color: #1E1E24;
 }
 
-.navbar-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0.75rem 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.navbar-brand:hover {
+  color: #20BB5E !important;
 }
 
-.brand {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.brand:hover {
-  text-decoration: none;
-  color: var(--accent);
-}
-
-.nav-links {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: .8rem;
-}
-
-.nav-link {
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.nav-link:hover,
 .nav-link.router-link-active {
-  color: var(--accent);
+  color: #20BB5E !important;
 }
 
-.user-name {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.btn-sm {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-}
-
-@media (min-width: 768px) {
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
+.nav-link:hover {
+  color: #20BB5E !important;
 }
 </style>

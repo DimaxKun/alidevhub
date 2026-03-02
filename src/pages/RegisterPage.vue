@@ -43,74 +43,57 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="container auth-page">
-    <div class="card auth-card">
-      <div class="auth-header">
-        <h1 class="page-title">Register</h1>
-        <p class="auth-subtitle">Create your AliDevHub account</p>
+  <div class="container py-4 d-flex justify-content-center">
+    <div class="card" style="max-width: 420px; width: 100%;">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-1 fw-bold">Register</h1>
+        <p class="text-secondary mb-3">Create your AliDevHub account</p>
+        <form @submit.prevent="onSubmit">
+          <div class="mb-3">
+            <label for="username" class="form-label fw-medium">Username</label>
+            <input id="username" v-model="username" type="text" class="form-control" placeholder="johndoe" required />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label fw-medium">Email</label>
+            <input id="email" v-model="email" type="email" class="form-control" placeholder="you@example.com"
+              required />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label fw-medium">Password</label>
+            <input id="password" v-model="password" type="password" class="form-control"
+              placeholder="At least 8 characters" required />
+          </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label fw-medium">Confirm password</label>
+            <input id="confirmPassword" v-model="confirmPassword" type="password" class="form-control"
+              placeholder="••••••••" required />
+          </div>
+          <p v-if="error" class="error-msg mb-1">{{ error }}</p>
+          <p v-if="success" class="success-msg mb-1">{{ success }}</p>
+          <button type="submit" class="btn btn-success w-100" :disabled="loading">
+            {{ loading ? 'Creating account…' : 'Create account' }}
+          </button>
+          <p class="text-center text-secondary mt-3 mb-0">
+            Already have an account?
+            <router-link to="/login">Login</router-link>
+          </p>
+        </form>
       </div>
-      <form @submit.prevent="onSubmit" class="auth-form">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input id="username" v-model="username" type="text" placeholder="johndoe" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input id="email" v-model="email" type="email" placeholder="you@example.com" required />
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input id="password" v-model="password" type="password" placeholder="At least 8 characters" required />
-        </div>
-        <div class="form-group">
-          <label for="confirmPassword">Confirm password</label>
-          <input id="confirmPassword" v-model="confirmPassword" type="password" placeholder="••••••••" required />
-        </div>
-        <p v-if="error" class="error-msg">{{ error }}</p>
-        <p v-if="success" class="success-msg">{{ success }}</p>
-        <button type="submit" class="btn btn-primary btn-block" :disabled="loading">
-          {{ loading ? 'Creating account…' : 'Create account' }}
-        </button>
-        <p class="auth-footer">
-          Already have an account? <router-link to="/login">Login</router-link>
-        </p>
-      </form>
     </div>
   </div>
 </template>
 
+
 <style scoped>
-.auth-page {
-  max-width: 420px;
+.card {
+  background-color: #1E1E24;
 }
 
-.auth-card {
-  padding: 2rem;
+.form-control {
+  background-color: #25252D;
 }
 
-.auth-header {
-  margin-bottom: 1.5rem;
-}
-
-.auth-subtitle {
-  color: var(--text-secondary);
-  margin: 0.25rem 0 0;
-}
-
-.auth-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.btn-block {
-  width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.75rem;
-}
-
-.auth-footer {
-  text-align: center;
-  margin-top: 1.25rem;
-  color: var(--text-secondary);
+.form-control::placeholder {
+  color: #71717a;
 }
 </style>

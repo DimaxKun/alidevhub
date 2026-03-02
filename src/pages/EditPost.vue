@@ -51,37 +51,46 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="container">
-    <h1 class="page-title">Edit Post</h1>
+  <div class="container py-4" style="max-width: 900px;">
+    <h1 class="h3 mb-3 fw-bold">Edit Post</h1>
     <p v-if="fetchError" class="error-msg">{{ fetchError }}</p>
-    <form v-else @submit.prevent="onSubmit" class="card form-card">
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input id="title" v-model="title" type="text" placeholder="Post title" required />
+    <div v-else class="card border-secondary">
+      <div class="card-body p-4">
+        <form @submit.prevent="onSubmit">
+          <div class="mb-3">
+            <label for="title" class="form-label fw-medium">Title</label>
+            <input id="title" v-model="title" type="text" class="form-control" placeholder="Post title" required />
+          </div>
+          <div class="mb-3">
+            <label for="content" class="form-label fw-medium">Content</label>
+            <textarea id="content" v-model="content" class="form-control" rows="6" placeholder="Write your post…"
+              required></textarea>
+          </div>
+          <p v-if="error" class="error-msg mb-2">{{ error }}</p>
+          <div class="d-flex gap-2">
+            <router-link :to="`/post/${postId}`" class="btn btn-outline-light">
+              Cancel
+            </router-link>
+            <button type="submit" class="btn btn-success" :disabled="loading">
+              {{ loading ? 'Saving…' : 'Save' }}
+            </button>
+          </div>
+        </form>
       </div>
-      <div class="form-group">
-        <label for="content">Content</label>
-        <textarea id="content" v-model="content" placeholder="Write your post…" required></textarea>
-      </div>
-      <p v-if="error" class="error-msg">{{ error }}</p>
-      <div class="form-actions">
-        <router-link :to="`/post/${postId}`" class="btn btn-ghost">Cancel</router-link>
-        <button type="submit" class="btn btn-primary" :disabled="loading">
-          {{ loading ? 'Saving…' : 'Save' }}
-        </button>
-      </div>
-    </form>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.form-card {
-  padding: 1.5rem;
+.card {
+  background-color: #1E1E24;
 }
 
-.form-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
+.form-control {
+  background-color: #25252D;
+}
+
+.form-control::placeholder {
+  color: #71717a;
 }
 </style>

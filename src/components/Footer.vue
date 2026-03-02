@@ -1,16 +1,15 @@
 <template>
-    <footer class="body-footer">
-        <div>
-            © 2026 Mohammad Ali Dimacaling. All rights reserved.
-        </div>
-    </footer>
+  <footer class="footer py-3 mt-auto">
+    <div class="container text-center text-light small">
+      © 2026 Mohammad Ali Dimacaling. All rights reserved.
+    </div>
+  </footer>
 </template>
 
 <style scoped>
-.body-footer{
-    background: var(--bg-secondary);
-    text-align: center;
-    padding: 1rem;
+
+.footer{
+  background-color: #1E1E24;
 }
 
 </style>

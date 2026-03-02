@@ -82,102 +82,54 @@ onMounted(loadPost)
 </script>
 
 <template>
-  <div class="container">
+  <div class="container py-4" style="max-width: 900px;">
     <p v-if="error" class="error-msg">{{ error }}</p>
     <template v-else-if="post">
-      <article class="post-detail card">
-        <div class="post-detail-header">
-          <h1 class="post-detail-title">{{ post.title }}</h1>
-          <div class="post-detail-meta">
-            <router-link
-              v-if="post?.author"
-              :to="`/author/${post.author._id || post.author}`"
-              class="author-link"
-            >
+      <article class="card  mb-4">
+        <div class="card-body p-4">
+          <h1 class="h3 mb-2 fw-bold">{{ post.title }}</h1>
+          <div class="d-flex gap-3 small text-muted mb-3">
+            <router-link v-if="post?.author" :to="`/author/${post.author._id || post.author}`"
+              class="text-decoration-none fw-semibold">
               {{ authorName }}
             </router-link>
-            <span class="date">{{ date }}</span>
+            <span class="text-secondary">{{ date }}</span>
           </div>
-          <div class="post-detail-actions">
-            <router-link v-if="canEdit" :to="`/edit/${post._id}`" class="btn btn-ghost btn-sm">Edit</router-link>
-            <button v-if="canEdit" type="button" class="btn btn-danger btn-sm" :disabled="deletingPost" @click="onDeletePost">
+          <div class="mb-3 d-flex gap-2">
+            <router-link v-if="canEdit" :to="`/edit/${post._id}`" class="btn btn-outline-light btn-sm">
+              Edit
+            </router-link>
+            <button v-if="canEdit" type="button" class="btn btn-danger btn-sm" :disabled="deletingPost"
+              @click="onDeletePost">
               {{ deletingPost ? 'Deleting…' : 'Delete' }}
             </button>
-            <router-link v-if="auth.isAdmin" to="/admin" class="btn btn-ghost btn-sm">Admin</router-link>
+            <router-link v-if="auth.isAdmin" to="/admin" class="btn btn-outline-secondary btn-sm">
+              Admin
+            </router-link>
+          </div>
+          <div style="white-space: pre-wrap; line-height: 1.7;">
+            {{ post.content }}
           </div>
         </div>
-        <div class="post-detail-content">{{ post.content }}</div>
       </article>
 
-      <section class="comments-section card">
-        <CommentList :comments="comments" :is-admin="auth.isAdmin" @delete="onDeleteComment" />
-        <p v-if="commentError" class="error-msg">{{ commentError }}</p>
-        <CommentForm v-if="auth.isLoggedIn" @submit="onCommentSubmit" />
-        <p v-else class="comment-login">
-          <router-link to="/login">Log in</router-link> to comment.
-        </p>
+      <section class="card border-secondary">
+        <div class="card-body p-4">
+          <CommentList :comments="comments" :is-admin="auth.isAdmin" @delete="onDeleteComment" />
+          <p v-if="commentError" class="error-msg mt-2">{{ commentError }}</p>
+          <CommentForm v-if="auth.isLoggedIn" @submit="onCommentSubmit" />
+          <p v-else class="mt-3 text-secondary mb-0">
+            <router-link to="/login">Log in</router-link> to comment.
+          </p>
+        </div>
       </section>
     </template>
-    <div v-else-if="loading" class="loading">Loading…</div>
+    <div v-else-if="loading" class="text-secondary py-4">Loading…</div>
   </div>
 </template>
 
 <style scoped>
-.post-detail {
-  padding: 2rem 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.post-detail-header {
-  margin-bottom: 1.5rem;
-}
-
-.post-detail-title {
-  margin: 0 0 0.5rem;
-  font-size: 1.75rem;
-  font-weight: 700;
-}
-
-.post-detail-meta {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-}
-
-.author-link {
-  font-weight: 600;
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.author-link:hover {
-  text-decoration: underline;
-}
-
-.post-detail-actions {
-  margin-top: 1rem;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.post-detail-content {
-  white-space: pre-wrap;
-  line-height: 1.7;
-  color: var(--text-primary);
-}
-
-.comments-section {
-  padding: 1.5rem;
-}
-
-.comment-login {
-  margin-top: 1rem;
-  color: var(--text-secondary);
-}
-
-.loading {
-  color: var(--text-secondary);
-  padding: 2rem 0;
+.card {
+  background-color: #1E1E24;
 }
 </style>

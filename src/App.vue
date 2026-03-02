@@ -4,9 +4,9 @@ import Footer from '@/components/Footer.vue'
 </script>
 
 <template>
-  <div class="app">
+  <div class="d-flex flex-column min-vh-100 text-light" style="background-color: #0F0F12;">
     <AppNavbar />
-    <main class="main">
+    <main class="flex-fill py-4">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
@@ -18,17 +18,6 @@ import Footer from '@/components/Footer.vue'
 </template>
 
 <style scoped>
-.app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.main {
-  flex: 1;
-  padding: 2rem 0;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.15s ease;

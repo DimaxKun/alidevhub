@@ -23,79 +23,38 @@ function authorName(c) {
 
 <template>
   <div class="comment-list">
-    <h3 class="comment-list-title">Comments ({{ comments.length }})</h3>
-    <div v-if="sortedComments.length === 0" class="comment-empty">No comments yet.</div>
-    <div v-else class="comment-items">
-      <div v-for="c in sortedComments" :key="c._id" class="comment-item card">
-        <div class="comment-header">
-          <span class="comment-author">{{ authorName(c) }}</span>
-          <button
-            v-if="isAdmin"
-            type="button"
-            class="btn btn-ghost btn-sm btn-danger-inline"
-            title="Remove comment"
-            @click="emit('delete', c._id)"
-          >
-            Remove
-          </button>
+    <h3 class="h6 mb-3">Comments ({{ comments.length }})</h3>
+    <div v-if="sortedComments.length === 0" class="text-muted py-2">No comments yet.</div>
+    <div v-else class="d-flex flex-column gap-2">
+      <div v-for="c in sortedComments" :key="c._id" class="card ">
+        <div class="card-body py-2 px-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-semibold small span-text">{{ authorName(c) }}</span>
+            <button
+              v-if="isAdmin"
+              type="button"
+              class="btn btn-outline-danger btn-sm py-0 px-2"
+              style="font-size: 0.8rem;"
+              title="Remove comment"
+              @click="emit('delete', c._id)"
+            >
+              Remove
+            </button>
+          </div>
+          <p class="mb-0 small" style="white-space: pre-wrap;">{{ c.comment }}</p>
         </div>
-        <p class="comment-body">{{ c.comment }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.comment-list-title {
-  font-size: 1.1rem;
-  margin: 0 0 1rem;
-  color: var(--text-secondary);
+.card {
+  background-color: #25252D;
 }
 
-.comment-empty {
-  color: var(--text-muted);
-  padding: 1rem 0;
+.span-text{
+  color: #22c55e;
 }
 
-.comment-items {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.comment-item {
-  padding: 1rem 1.25rem;
-}
-
-.comment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.comment-author {
-  font-weight: 600;
-  color: var(--accent);
-  font-size: 0.9rem;
-}
-
-.btn-danger-inline {
-  font-size: 0.8rem;
-  padding: 0.25rem 0.5rem;
-  color: var(--danger);
-  border-color: transparent;
-}
-
-.btn-danger-inline:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: var(--danger);
-}
-
-.comment-body {
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  white-space: pre-wrap;
-}
 </style>

@@ -49,80 +49,39 @@ function dateStr(post) {
 </script>
 
 <template>
-  <div class="container">
-    <h1 class="page-title">Admin Dashboard</h1>
-    <p class="admin-desc">Delete any post. To remove comments, open the post and use the Remove button on each comment.</p>
+  <div class="container py-4" style="max-width: 900px;">
+    <h1 class="h3 mb-2 fw-bold">Admin Dashboard</h1>
+    <p class="text-secondary mb-3 small">
+      Delete any post. To remove comments, open the post and use the Remove button on each comment.
+    </p>
 
     <p v-if="error" class="error-msg">{{ error }}</p>
-    <div v-else-if="loading" class="loading">Loading…</div>
-    <div v-else-if="posts.length === 0" class="empty">No posts.</div>
-    <div v-else class="admin-list card">
-      <div v-for="post in posts" :key="post._id" class="admin-row">
-        <div class="admin-row-main">
-          <router-link :to="`/post/${post._id}`" class="admin-row-title">{{ post.title }}</router-link>
-          <span class="admin-row-meta">{{ authorName(post) }} · {{ dateStr(post) }}</span>
-        </div>
-        <button
-          type="button"
-          class="btn btn-danger btn-sm"
-          :disabled="deletingId === post._id"
-          @click="removePost(post._id)"
-        >
-          {{ deletingId === post._id ? 'Deleting…' : 'Delete' }}
-        </button>
-      </div>
+    <div v-else-if="loading" class="text-secondary py-4">Loading…</div>
+    <div v-else-if="posts.length === 0" class="text-secondary py-4">No posts.</div>
+    <div v-else class="card">
+      <ul class="list-group list-group-flush">
+        <li v-for="post in posts" :key="post._id"
+          class="list-group-item text-light d-flex justify-content-between align-items-center py-3">
+          <div class="me-3 flex-grow-1" style="min-width: 0;">
+            <router-link :to="`/post/${post._id}`" class="fw-semibold text-decoration-none text-light d-block">
+              {{ post.title }}
+            </router-link>
+            <div class="small text-body-tertiary">
+              {{ authorName(post) }} · {{ dateStr(post) }}
+            </div>
+          </div>
+          <button type="button" class="btn btn-danger btn-sm" :disabled="deletingId === post._id"
+            @click="removePost(post._id)">
+            {{ deletingId === post._id ? 'Deleting…' : 'Delete' }}
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <style scoped>
-.admin-desc {
-  color: var(--text-secondary);
-  margin: -0.5rem 0 1.5rem;
-  font-size: 0.95rem;
-}
-
-.loading, .empty {
-  color: var(--text-secondary);
-  padding: 2rem 0;
-}
-
-.admin-list {
-  padding: 0;
-  overflow: hidden;
-}
-
-.admin-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.admin-row:last-child {
-  border-bottom: none;
-}
-
-.admin-row-main {
-  flex: 1;
-  min-width: 0;
-}
-
-.admin-row-title {
-  display: block;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
-}
-
-.admin-row-title:hover {
-  color: var(--accent);
-}
-
-.admin-row-meta {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+.list-group-item{
+  background-color: #1E1E24;
 }
 </style>

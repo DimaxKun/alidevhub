@@ -20,44 +20,34 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container">
-    <img class="img-fluid" src="/images/header-img.avif" alt="">
-    <p class="tagline"> <em> Discover, build smarter, and level up your full-stack skills with practical insights and modern development strategies on AliDevHub.</em></p>
+  <div class="container py-2">
+    <img class="img rounded-4 mb-3" src="/images/header-img.avif" alt="">
+    <p class="text-center text-body-secondary mb-4">
+      <em>
+        Discover, build smarter, and level up your full-stack skills with practical insights
+        and modern development strategies on AliDevHub.
+      </em>
+    </p>
 
     <p v-if="error" class="error-msg">{{ error }}</p>
-    <div v-else-if="loading" class="loading">Loading posts…</div>
-    <div v-else-if="posts.length === 0" class="empty">
-      No posts yet. <router-link to="/create">Create the first one</router-link> (login required).
+    <div v-else-if="loading" class="text-secondary py-4">Loading posts…</div>
+    <div v-else-if="posts.length === 0" class="text-secondary py-4">
+      No posts yet.
+      <router-link to="/create">Create the first one</router-link> (login required).
     </div>
-    <div v-else class="post-list">
-      <PostCard v-for="post in posts" :key="post._id" :post="post" />
+    <div v-else class="row g-3">
+      <div v-for="post in posts" :key="post._id" class="col-12 col-md-6 col-lg-4">
+        <PostCard :post="post" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.tagline {
-  text-align: center;
-  color: var(--text-secondary);
-  margin: 1rem 0 1.5rem;
-}
-
-.loading, .empty {
-  color: var(--text-secondary);
-  padding: 2rem 0;
-}
-
-.post-list {
-  display: flex;
-  flex-direction: column;
-}
-
-img{
-  border-radius: 1rem;
+.img {
   width: 100%;
-  height: auto;
-  display: block;
+  height: 20rem;
+  object-fit: cover;
+  object-position: right center;
 }
-
-
 </style>
