@@ -15,6 +15,12 @@ const routes = [
     meta: { title: "Post" },
   },
   {
+    path: "/author/:id",
+    name: "AuthorProfile",
+    component: () => import("@/pages/AuthorProfile.vue"),
+    meta: { title: "Author" },
+  },
+  {
     path: "/login",
     name: "Login",
     component: () => import("@/pages/LoginPage.vue"),

@@ -30,7 +30,13 @@ function logout() {
           {{ link.name }}
         </router-link>
         <template v-if="auth.isLoggedIn">
-          <!-- <span class="user-name">{{ auth.user?.username }}</span> -->
+          <router-link
+            v-if="auth.user"
+            :to="`/author/${auth.user._id}`"
+            class="user-name nav-link"
+          >
+            {{ auth.user.username }}
+          </router-link>
           <button type="button" class="btn btn-ghost btn-sm" @click="logout">Logout</button>
         </template>
         <template v-else>

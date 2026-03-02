@@ -25,10 +25,12 @@ api.interceptors.response.use(
 export const register = (data) => api.post('/users/register', data)
 export const login = (data) => api.post('/users/login', data)
 export const getProfile = () => api.get('/users/details')
+export const getPublicUser = (id) => api.get(`/users/public/${id}`)
 
 // Posts
 export const getPosts = () => api.get('/posts/getPosts')
 export const getPost = (id) => api.get(`/posts/getPost/${id}`)
+export const getAuthorPosts = (authorId) => api.get(`/posts/author/${authorId}`)
 export const addPost = (data) => api.post('/posts/addPost', data)
 export const updatePost = (id, data) => api.patch(`/posts/updatePost/${id}`, data)
 export const deletePost = (id) => api.delete(`/posts/deletePost/${id}`)

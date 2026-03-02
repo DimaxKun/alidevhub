@@ -89,7 +89,13 @@ onMounted(loadPost)
         <div class="post-detail-header">
           <h1 class="post-detail-title">{{ post.title }}</h1>
           <div class="post-detail-meta">
-            <span class="author">{{ authorName }}</span>
+            <router-link
+              v-if="post?.author"
+              :to="`/author/${post.author._id || post.author}`"
+              class="author-link"
+            >
+              {{ authorName }}
+            </router-link>
             <span class="date">{{ date }}</span>
           </div>
           <div class="post-detail-actions">
@@ -139,9 +145,14 @@ onMounted(loadPost)
   color: var(--text-muted);
 }
 
-.author {
+.author-link {
   font-weight: 600;
   color: var(--accent);
+  text-decoration: none;
+}
+
+.author-link:hover {
+  text-decoration: underline;
 }
 
 .post-detail-actions {

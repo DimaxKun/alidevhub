@@ -25,14 +25,22 @@ const excerpt = computed(() => {
 
 <template>
   <article class="post-card card">
-    <router-link :to="`/post/${post._id}`" class="post-card-link">
-      <h2 class="post-card-title">{{ post.title }}</h2>
+    <div class="post-card-link">
+      <router-link :to="`/post/${post._id}`" class="post-card-title-link">
+        <h2 class="post-card-title">{{ post.title }}</h2>
+      </router-link>
       <p class="post-card-excerpt">{{ excerpt }}</p>
       <div class="post-card-meta">
-        <span class="author">{{ authorName }}</span>
+        <router-link
+          v-if="post.author"
+          :to="`/author/${post.author._id || post.author}`"
+          class="author-link"
+        >
+          {{ authorName }}
+        </router-link>
         <span class="date">{{ date }}</span>
       </div>
-    </router-link>
+    </div>
   </article>
 </template>
 
@@ -49,13 +57,14 @@ const excerpt = computed(() => {
 .post-card-link {
   display: block;
   padding: 1.25rem 1.5rem;
-  color: inherit;
+}
+
+.post-card-title-link {
   text-decoration: none;
 }
 
-.post-card-link:hover {
+.post-card-title-link:hover {
   text-decoration: none;
-  color: inherit;
 }
 
 .post-card-title {
@@ -79,8 +88,13 @@ const excerpt = computed(() => {
   color: var(--text-muted);
 }
 
-.author {
+.author-link {
   font-weight: 500;
   color: var(--accent);
+  text-decoration: none;
+}
+
+.author-link:hover {
+  text-decoration: underline;
 }
 </style>
