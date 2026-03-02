@@ -21,7 +21,7 @@ onMounted(async () => {
 
 <template>
   <div class="container">
-    <img class="img-fluid rounded-4" src="/images/header-img.jpg" alt="">
+    <img class="img-fluid" src="/images/header-img.avif" alt="">
     <p class="tagline"> <em> Discover, build smarter, and level up your full-stack skills with practical insights and modern development strategies on AliDevHub.</em></p>
 
     <p v-if="error" class="error-msg">{{ error }}</p>
@@ -53,6 +53,7 @@ onMounted(async () => {
 }
 
 img{
+  border-radius: 1rem;
   width: 100%;
   height: auto;
   display: block;
