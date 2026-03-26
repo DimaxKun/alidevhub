@@ -24,8 +24,7 @@ onMounted(async () => {
     <img class="img rounded-4 mb-3" src="/images/header-img.png" alt="">
     <p class="text-center text-body-secondary mb-4">
       <em>
-        Discover, build smarter, and level up your full-stack skills with practical insights
-        and modern development strategies on AliDevHub.
+        Explore ideas, share your own posts, and enhance your full-stack skills with practical insights and modern development strategies on AliDevHub.
       </em>
     </p>
 
