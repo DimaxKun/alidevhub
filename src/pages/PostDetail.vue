@@ -60,6 +60,16 @@ const renderedContent = computed(() => {
     if (API_BASE.startsWith('https://')) {
       resolved = resolved.replace(/src=(["'])http:\/\//gi, (_m, quote) => `src=${quote}https://`)
     }
+
+    // Rewrite any absolute `/uploads/...` URL to the configured API base.
+    // This fixes cases where old uploads contain a hostname/port that isn't reachable.
+    if (API_BASE) {
+      const apiBaseNoSlash = API_BASE.replace(/\/$/, '')
+      resolved = resolved.replace(
+        /src=(["'])https?:\/\/[^"']*?(\/uploads\/[^"']*)\1/gi,
+        (_m, quote, uploadsPath) => `src=${quote}${apiBaseNoSlash}${uploadsPath}${quote}`
+      )
+    }
     // Use the first image as banner/cover, so remove it from the article body
     // to avoid showing it twice.
     const withoutFirstImg = resolved.replace(/<img[^>]*>/i, '')
@@ -77,7 +87,14 @@ const bannerImage = computed(() => {
   if (!src) return ''
   if (/^https?:\/\//i.test(src)) {
     if (API_BASE.startsWith('https://') && src.startsWith('http://')) {
-      return src.replace(/^http:\/\//i, 'https://')
+      const rewritten = API_BASE && src.includes('/uploads/')
+        ? `${API_BASE.replace(/\/$/, '')}${src.slice(src.indexOf('/uploads/'))}`
+        : src.replace(/^http:\/\//i, 'https://')
+      return rewritten
+    }
+
+    if (API_BASE && src.includes('/uploads/')) {
+      return `${API_BASE.replace(/\/$/, '')}${src.slice(src.indexOf('/uploads/'))}`
     }
     return src
   }

@@ -22,7 +22,13 @@ const bannerImage = computed(() => {
   if (!src) return ''
   if (/^https?:\/\//i.test(src)) {
     if (API_BASE.startsWith('https://') && src.startsWith('http://')) {
+      if (API_BASE && src.includes('/uploads/')) {
+        return `${API_BASE.replace(/\/$/, '')}${src.slice(src.indexOf('/uploads/'))}`
+      }
       return src.replace(/^http:\/\//i, 'https://')
+    }
+    if (API_BASE && src.includes('/uploads/')) {
+      return `${API_BASE.replace(/\/$/, '')}${src.slice(src.indexOf('/uploads/'))}`
     }
     return src
   }

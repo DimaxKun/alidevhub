@@ -75,7 +75,10 @@ async function onPickImage(event) {
   // Reset input so selecting the same file again triggers `change`.
   if (fileInput.value) fileInput.value.value = ''
   if (!file) return
-  if (!file.type.startsWith('image/')) return
+  if (file.type !== 'image/png') {
+    alert('Only PNG images are allowed.')
+    return
+  }
 
   uploading.value = true
   try {
@@ -102,7 +105,7 @@ async function onPickImage(event) {
     <input
       ref="fileInput"
       type="file"
-      accept="image/*"
+      accept="image/png"
       class="d-none"
       @change="onPickImage"
     />
