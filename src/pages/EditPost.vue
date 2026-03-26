@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getPost, updatePost } from '@/api'
 import { useAuthStore } from '@/stores/auth'
+import RichTextEditor from '@/components/RichTextEditor.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -14,6 +15,16 @@ const error = ref('')
 const loading = ref(false)
 const fetchError = ref('')
 const postId = computed(() => route.params.id)
+
+function hasMeaningfulContent(html) {
+  if (/<img[^>]+>/i.test(html || '')) return true
+  const text = (html || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return text.length > 0
+}
 
 onMounted(async () => {
   try {
@@ -34,13 +45,13 @@ onMounted(async () => {
 
 async function onSubmit() {
   error.value = ''
-  if (!title.value.trim() || !content.value.trim()) {
+  if (!title.value.trim() || !hasMeaningfulContent(content.value)) {
     error.value = 'Title and content are required.'
     return
   }
   loading.value = true
   try {
-    await updatePost(postId.value, { title: title.value.trim(), content: content.value.trim() })
+    await updatePost(postId.value, { title: title.value.trim(), content: content.value })
     router.push(`/post/${postId.value}`)
   } catch (e) {
     error.value = e.message || 'Failed to update post.'
@@ -63,8 +74,7 @@ async function onSubmit() {
           </div>
           <div class="mb-3">
             <label for="content" class="form-label fw-medium">Content</label>
-            <textarea id="content" v-model="content" class="form-control" rows="6" placeholder="Write your post…"
-              required></textarea>
+            <RichTextEditor id="content" v-model="content" />
           </div>
           <p v-if="error" class="error-msg mb-2">{{ error }}</p>
           <div class="d-flex gap-2">

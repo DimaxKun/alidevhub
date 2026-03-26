@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import DOMPurify from 'dompurify'
 import { useRoute, useRouter } from 'vue-router'
 import { getPost, addComment, deleteComment, deletePost } from '@/api'
 import { useAuthStore } from '@/stores/auth'
@@ -31,6 +32,53 @@ const canEdit = computed(() => {
   return auth.isAdmin || (post.value.author && (post.value.author._id || post.value.author) === auth.user._id)
 })
 const comments = computed(() => post.value?.comments || [])
+
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
+function escapeHtml(str) {
+  return (str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+}
+
+const renderedContent = computed(() => {
+  const raw = post.value?.content || ''
+  if (!raw) return ''
+
+  // If this is already HTML (new posts from the editor), sanitize and render.
+  // If it's plain text (older posts), escape and preserve newlines.
+  const looksLikeHtml = /<\/?[a-z][\s\S]*>/i.test(raw)
+  if (looksLikeHtml) {
+    // Resolve old relative `/uploads/...` URLs so images load correctly.
+    const uploadsPrefix = API_BASE ? `${API_BASE.replace(/\/$/, '')}/uploads/` : ''
+    let resolved = raw
+    if (uploadsPrefix) {
+      resolved = resolved.replace(/src=(["'])\/uploads\//gi, (_m, quote) => `src=${quote}${uploadsPrefix}`)
+    }
+    // Use the first image as banner/cover, so remove it from the article body
+    // to avoid showing it twice.
+    const withoutFirstImg = resolved.replace(/<img[^>]*>/i, '')
+    return DOMPurify.sanitize(withoutFirstImg)
+  }
+
+  return escapeHtml(raw).replace(/\n/g, '<br/>')
+})
+
+const bannerImage = computed(() => {
+  const raw = post.value?.content || ''
+  if (!raw) return ''
+  const match = raw.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i)
+  const src = match?.[1]
+  if (!src) return ''
+  if (/^https?:\/\//i.test(src)) return src
+
+  // Backward compatibility for older stored relative URLs: prefix with API base.
+  if (src.startsWith('/uploads/') && API_BASE) return `${API_BASE.replace(/\/$/, '')}${src}`
+  if (src.startsWith('/uploads/')) return src
+
+  return ''
+})
 
 async function loadPost() {
   try {
@@ -85,7 +133,10 @@ onMounted(loadPost)
   <div class="container py-4" style="max-width: 900px;">
     <p v-if="error" class="error-msg">{{ error }}</p>
     <template v-else-if="post">
-      <article class="card  mb-4">
+      <article class="card post-article mb-4">
+        <div v-if="bannerImage" class="post-banner">
+          <img :src="bannerImage" alt="Post banner" />
+        </div>
         <div class="card-body p-4">
           <h1 class="h3 mb-2 fw-bold">{{ post.title }}</h1>
           <div class="d-flex gap-3 small text-muted mb-3">
@@ -107,9 +158,7 @@ onMounted(loadPost)
               Admin
             </router-link>
           </div>
-          <div style="white-space: pre-wrap; line-height: 1.7;">
-            {{ post.content }}
-          </div>
+          <div class="post-content rte-content" v-html="renderedContent"></div>
         </div>
       </article>
 
@@ -131,5 +180,33 @@ onMounted(loadPost)
 <style scoped>
 .card {
   background-color: #1E1E24;
+}
+
+.post-banner {
+  width: 100%;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  overflow: hidden;
+}
+
+.post-banner img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+:deep(.rte-content) {
+  line-height: 1.7;
+  color: #e5e5e7;
+}
+
+:deep(.rte-content p) {
+  margin: 0 0 0.9rem 0;
+}
+
+:deep(.rte-content ul),
+:deep(.rte-content ol) {
+  padding-left: 1.25rem;
 }
 </style>

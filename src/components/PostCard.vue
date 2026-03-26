@@ -5,6 +5,27 @@ const props = defineProps({
   post: { type: Object, required: true }
 })
 
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
+function stripHtml(html) {
+  return (html || '')
+    .replace(/<[/!a-zA-Z][^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+const bannerImage = computed(() => {
+  const raw = props.post?.content || ''
+  const match = raw.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i)
+  const src = match?.[1]
+  if (!src) return ''
+  if (/^https?:\/\//i.test(src)) return src
+  if (src.startsWith('/uploads/') && API_BASE) return `${API_BASE.replace(/\/$/, '')}${src}`
+  if (src.startsWith('/uploads/')) return src
+  return ''
+})
+
 const authorName = computed(() => {
   const a = props.post.author
   if (!a) return 'Unknown'
@@ -18,13 +39,16 @@ const date = computed(() => {
 })
 
 const excerpt = computed(() => {
-  const c = props.post.content || ''
-  return c.length > 160 ? c.slice(0, 160) + '…' : c
+  const text = stripHtml(props.post.content || '')
+  return text.length > 160 ? text.slice(0, 160) + '…' : text
 })
 </script>
 
 <template>
   <article class="card border-secondary h-100">
+    <div v-if="bannerImage" class="post-card-banner">
+      <img :src="bannerImage" alt="Post cover" />
+    </div>
     <div class="card-body d-flex flex-column">
       <router-link :to="`/post/${post._id}`" class="text-decoration-none">
         <h2 class="h5 mb-2 text-light fw-bold">{{ post.title }}</h2>
@@ -48,6 +72,21 @@ const excerpt = computed(() => {
 
 .card{
   background-color: #1E1E24;
+}
+
+.post-card-banner{
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.post-card-banner img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .card:hover {

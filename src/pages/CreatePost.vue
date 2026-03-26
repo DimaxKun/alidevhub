@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { addPost } from '@/api'
+import RichTextEditor from '@/components/RichTextEditor.vue'
 
 const router = useRouter()
 const title = ref('')
@@ -9,15 +10,25 @@ const content = ref('')
 const error = ref('')
 const loading = ref(false)
 
+function hasMeaningfulContent(html) {
+  if (/<img[^>]+>/i.test(html || '')) return true
+  const text = (html || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return text.length > 0
+}
+
 async function onSubmit() {
   error.value = ''
-  if (!title.value.trim() || !content.value.trim()) {
+  if (!title.value.trim() || !hasMeaningfulContent(content.value)) {
     error.value = 'Title and content are required.'
     return
   }
   loading.value = true
   try {
-    const { data } = await addPost({ title: title.value.trim(), content: content.value.trim() })
+    const { data } = await addPost({ title: title.value.trim(), content: content.value })
     router.push(`/post/${data.result._id}`)
   } catch (e) {
     error.value = e.message || 'Failed to create post.'
@@ -39,8 +50,7 @@ async function onSubmit() {
           </div>
           <div class="mb-3">
             <label for="content" class="form-label fw-medium">Content</label>
-            <textarea id="content" v-model="content" class="form-control" rows="6" placeholder="Write your post…"
-              required></textarea>
+            <RichTextEditor id="content" v-model="content" />
           </div>
           <p v-if="error" class="error-msg mb-2">{{ error }}</p>
           <div class="d-flex gap-2">

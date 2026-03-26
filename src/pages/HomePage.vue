@@ -21,7 +21,7 @@ onMounted(async () => {
 
 <template>
   <div class="container py-2">
-    <img class="img rounded-4 mb-3" src="/images/header-img.avif" alt="">
+    <img class="img rounded-4 mb-3" src="/images/header-img.png" alt="">
     <p class="text-center text-body-secondary mb-4">
       <em>
         Discover, build smarter, and level up your full-stack skills with practical insights
