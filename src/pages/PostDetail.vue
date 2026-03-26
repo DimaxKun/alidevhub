@@ -56,6 +56,10 @@ const renderedContent = computed(() => {
     if (uploadsPrefix) {
       resolved = resolved.replace(/src=(["'])\/uploads\//gi, (_m, quote) => `src=${quote}${uploadsPrefix}`)
     }
+    // If we ended up with http URLs behind https, browsers may block them.
+    if (API_BASE.startsWith('https://')) {
+      resolved = resolved.replace(/src=(["'])http:\/\//gi, (_m, quote) => `src=${quote}https://`)
+    }
     // Use the first image as banner/cover, so remove it from the article body
     // to avoid showing it twice.
     const withoutFirstImg = resolved.replace(/<img[^>]*>/i, '')
@@ -71,7 +75,12 @@ const bannerImage = computed(() => {
   const match = raw.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i)
   const src = match?.[1]
   if (!src) return ''
-  if (/^https?:\/\//i.test(src)) return src
+  if (/^https?:\/\//i.test(src)) {
+    if (API_BASE.startsWith('https://') && src.startsWith('http://')) {
+      return src.replace(/^http:\/\//i, 'https://')
+    }
+    return src
+  }
 
   // Backward compatibility for older stored relative URLs: prefix with API base.
   if (src.startsWith('/uploads/') && API_BASE) return `${API_BASE.replace(/\/$/, '')}${src}`

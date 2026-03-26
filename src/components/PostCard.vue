@@ -20,7 +20,12 @@ const bannerImage = computed(() => {
   const match = raw.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i)
   const src = match?.[1]
   if (!src) return ''
-  if (/^https?:\/\//i.test(src)) return src
+  if (/^https?:\/\//i.test(src)) {
+    if (API_BASE.startsWith('https://') && src.startsWith('http://')) {
+      return src.replace(/^http:\/\//i, 'https://')
+    }
+    return src
+  }
   if (src.startsWith('/uploads/') && API_BASE) return `${API_BASE.replace(/\/$/, '')}${src}`
   if (src.startsWith('/uploads/')) return src
   return ''
@@ -92,5 +97,10 @@ const excerpt = computed(() => {
 .card:hover {
   border-color: #20BB5E !important;
 }
+
+h2:hover{
+  color: #20BB5E !important;
+}
+
 </style>
 
