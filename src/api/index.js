@@ -34,8 +34,6 @@ export const getAuthorPosts = (authorId) => api.get(`/posts/author/${authorId}`)
 export const addPost = (data) => api.post('/posts/addPost', data)
 export const updatePost = (id, data) => api.patch(`/posts/updatePost/${id}`, data)
 export const deletePost = (id) => api.delete(`/posts/deletePost/${id}`)
-export const uploadPostImage = (formData) =>
-  api.post('/posts/uploadImage', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
 
 // Comments
 export const getComments = (postId) => api.get(`/posts/getComments/${postId}`)

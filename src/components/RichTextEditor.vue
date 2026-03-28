@@ -1,11 +1,10 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { EditorContent, useEditor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
-import { uploadPostImage } from '@/api'
 
 const props = defineProps({
   modelValue: {
@@ -15,9 +14,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
-
-const fileInput = ref(null)
-const uploading = ref(false)
 
 function setEditorContentIfNeeded(value) {
   if (!editor.value) return
@@ -31,7 +27,7 @@ const editor = useEditor({
     StarterKit,
     Underline,
     Image.configure({
-      // Allow block images and render them responsively.
+      allowBase64: true,
       HTMLAttributes: {
         style: 'max-width:100%;height:auto;border-radius:10px;',
       },
@@ -70,45 +66,103 @@ function run(command) {
   command(editor.value).run()
 }
 
-async function onPickImage(event) {
-  const file = event.target?.files?.[0]
-  // Reset input so selecting the same file again triggers `change`.
-  if (fileInput.value) fileInput.value.value = ''
-  if (!file) return
-  if (file.type !== 'image/png') {
-    alert('Only PNG images are allowed.')
+function stripPastedNoise(s) {
+  return (s || '')
+    .trim()
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/^['"\u201C\u201D\u2018\u2019]+|['"\u201C\u201D\u2018\u2019]+$/g, '')
+    .trim()
+}
+
+function normalizeHttpOrHttpsUrl(url) {
+  if (!/^https?:\/\//i.test(url)) return ''
+  try {
+    const u = new URL(url)
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return ''
+    return u.href
+  } catch {
+    /* fall through */
+  }
+  try {
+    const u = new URL(encodeURI(url))
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return ''
+    return u.href
+  } catch {
+    /* fall through */
+  }
+  try {
+    const u = new URL(url.replace(/\s/g, '%20'))
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return ''
+    return u.href
+  } catch {
+    /* fall through */
+  }
+  if (/^https?:\/\/[^\s"'<>]+$/i.test(url)) return url
+  // Last resort: accept trimmed http(s) like a plain string field (some CDNs / signed URLs fail `new URL()`).
+  if (
+    /^https?:\/\//i.test(url) &&
+    url.length <= 8192 &&
+    !/[<>\n\r]/.test(url)
+  ) {
+    return url
+  }
+  return ''
+}
+
+function normalizeImageUrl(raw) {
+  const url = stripPastedNoise(raw)
+  if (!url) return ''
+  const lower = url.toLowerCase()
+  if (lower.startsWith('javascript:') || lower.startsWith('vbscript:')) return ''
+  if (lower.startsWith('data:') && !lower.startsWith('data:image/')) return ''
+
+  // data:image/* (any subtype). Require comma before payload (base64 or comma-delimited).
+  if (/^data:image\//i.test(url)) {
+    if (/^data:image\/[\w+.+-]+(?:;[\w=+./-]*)*,/i.test(url)) return url
+    return ''
+  }
+
+  try {
+    // Protocol-relative → resolve against a dummy https base
+    if (url.startsWith('//')) {
+      const abs = new URL(url, 'https://example.org')
+      if (abs.protocol !== 'https:' && abs.protocol !== 'http:') return ''
+      return abs.href
+    }
+
+    // Root-relative path (same-origin when rendered)
+    if (url.startsWith('/') && !url.startsWith('//')) {
+      if (!/^\/[^\s"'<>]+$/i.test(url)) return ''
+      return url
+    }
+
+    return normalizeHttpOrHttpsUrl(url)
+  } catch {
+    return ''
+  }
+}
+
+function insertImageFromUrl() {
+  const input = window.prompt(
+    'Paste an image URL (any format: .jpg, .webp, .gif, .svg, no file extension, etc.). Stored in your post content in MongoDB.',
+    ''
+  )
+  const src = normalizeImageUrl(input)
+  if (!src) {
+    if (input != null && String(input).trim() !== '') {
+      alert(
+        'Use a valid image URL: http(s)://... (any extension or none), //..., a path starting with /, or data:image/...'
+      )
+    }
     return
   }
 
-  uploading.value = true
-  try {
-    const formData = new FormData()
-    formData.append('image', file)
-    const { data } = await uploadPostImage(formData)
-
-    editor.value
-      ?.chain()
-      .focus()
-      .insertContent({
-        type: 'image',
-        attrs: { src: data.url, alt: file.name },
-      })
-      .run()
-  } finally {
-    uploading.value = false
-  }
+  editor.value?.chain().focus().setImage({ src, alt: '' }).run()
 }
 </script>
 
 <template>
   <div class="rte">
-    <input
-      ref="fileInput"
-      type="file"
-      accept="image/png"
-      class="d-none"
-      @change="onPickImage"
-    />
     <div v-if="canRender" class="rte-toolbar btn-group" role="toolbar" aria-label="Formatting">
       <button
         type="button"
@@ -215,11 +269,10 @@ async function onPickImage(event) {
       <button
         type="button"
         class="rte-btn btn btn-sm btn-outline-light"
-        :disabled="uploading"
-        @click="fileInput?.click()"
-        title="Insert image"
+        @click="insertImageFromUrl"
+        title="Insert image from URL (saved in post content)"
       >
-        {{ uploading ? 'Uploading…' : 'Image' }}
+        Image URL
       </button>
     </div>
 
@@ -270,9 +323,7 @@ async function onPickImage(event) {
   color: #22c55e !important;
 }
 
-/* Placeholder extension styling (class name used by TipTap) */
 .rte-editor :deep(.is-editor-empty:first-child::before) {
   color: #71717a;
 }
 </style>
-

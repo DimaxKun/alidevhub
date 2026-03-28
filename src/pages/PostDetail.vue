@@ -73,6 +73,7 @@ const renderedContent = computed(() => {
     // Use the first image as banner/cover, so remove it from the article body
     // to avoid showing it twice.
     const withoutFirstImg = resolved.replace(/<img[^>]*>/i, '')
+    // Default DOMPurify rules already allow http(s) image URLs and data: on <img>.
     return DOMPurify.sanitize(withoutFirstImg)
   }
 
@@ -85,6 +86,9 @@ const bannerImage = computed(() => {
   const match = raw.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i)
   const src = match?.[1]
   if (!src) return ''
+
+  if (/^data:image\//i.test(src)) return src
+
   if (/^https?:\/\//i.test(src)) {
     if (API_BASE.startsWith('https://') && src.startsWith('http://')) {
       const rewritten = API_BASE && src.includes('/uploads/')
@@ -99,9 +103,10 @@ const bannerImage = computed(() => {
     return src
   }
 
-  // Backward compatibility for older stored relative URLs: prefix with API base.
-  if (src.startsWith('/uploads/') && API_BASE) return `${API_BASE.replace(/\/$/, '')}${src}`
-  if (src.startsWith('/uploads/')) return src
+  if (src.startsWith('/') && !src.startsWith('//')) {
+    if (src.startsWith('/uploads/') && API_BASE) return `${API_BASE.replace(/\/$/, '')}${src}`
+    return src
+  }
 
   return ''
 })

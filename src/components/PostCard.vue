@@ -20,6 +20,9 @@ const bannerImage = computed(() => {
   const match = raw.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i)
   const src = match?.[1]
   if (!src) return ''
+
+  if (/^data:image\//i.test(src)) return src
+
   if (/^https?:\/\//i.test(src)) {
     if (API_BASE.startsWith('https://') && src.startsWith('http://')) {
       if (API_BASE && src.includes('/uploads/')) {
@@ -32,8 +35,12 @@ const bannerImage = computed(() => {
     }
     return src
   }
-  if (src.startsWith('/uploads/') && API_BASE) return `${API_BASE.replace(/\/$/, '')}${src}`
-  if (src.startsWith('/uploads/')) return src
+
+  if (src.startsWith('/') && !src.startsWith('//')) {
+    if (src.startsWith('/uploads/') && API_BASE) return `${API_BASE.replace(/\/$/, '')}${src}`
+    return src
+  }
+
   return ''
 })
 
