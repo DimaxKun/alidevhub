@@ -1,53 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+:root {
+  --bg-base: #0F0F12;
+  --bg-card: #1A1A21;
+  --bg-input: #22222B;
+  --bg-hover: #202028;
+  --accent: #22c55e;
+  --accent-dark: #16a34a;
+  --accent-dim: rgba(34, 197, 94, 0.12);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-accent: rgba(34, 197, 94, 0.4);
+  --text-primary: #f0f0f2;
+  --text-secondary: #9898a8;
+  --text-muted: #5a5a6e;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --transition: 0.18s ease;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
-  background-color: #0F0F12;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
 }
 
 #app {
   min-height: 100vh;
 }
 
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: #333340; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #44445a; }
+
+/* Cards */
 .card {
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border-color: var(--border) !important;
+  background-color: var(--bg-card);
 }
 
-.form-control:focus {
-  border-color: #22c55e;
-  box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+/* Forms */
+.form-control,
+.form-select {
+  background-color: var(--bg-input);
+  border-color: var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--bg-input);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+.form-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+/* Buttons */
 .btn {
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  letter-spacing: 0.01em;
 }
 
 .btn-success {
-  background-color: #22c55e;
-  border-color: #22c55e;
-  color: #0f0f12;
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #0a1a0f;
 }
 
-.btn-success:hover {
-  background-color: #16a34a;
-  border-color: #16a34a;
-  color: #0f0f12;
+.btn-success:hover,
+.btn-success:focus {
+  background-color: var(--accent-dark);
+  border-color: var(--accent-dark);
+  color: #0a1a0f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
+.btn-outline-light {
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+.btn-outline-light:hover {
+  background-color: var(--bg-hover);
+  border-color: rgba(255,255,255,0.2);
+  color: var(--text-primary);
+}
+
+.btn-outline-danger:hover {
+  transform: translateY(-1px);
+}
+
+/* Links */
 a {
-  color: #22c55e;
+  color: var(--accent);
+  transition: color var(--transition);
 }
 
 a:hover {
-  color: #16a34a;
+  color: var(--accent-dark);
 }
 
+/* Messages */
 .error-msg {
-  color: #ef4444;
-  font-size: 0.9rem;
+  color: #f87171;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .success-msg {
-  color: #22c55e;
-  font-size: 0.9rem;
+  color: var(--accent);
+  font-size: 0.875rem;
+}
+
+/* Badge */
+.badge.bg-success {
+  background-color: var(--accent-dim) !important;
+  color: var(--accent) !important;
+  font-weight: 600;
+  border: 1px solid var(--border-accent);
+}
+
+/* List group */
+.list-group-item {
+  background-color: var(--bg-card);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.25rem 0;
 }

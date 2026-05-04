@@ -20,32 +20,55 @@ async function onSubmit() {
 </script>
 
 <template>
-  <form @submit.prevent="onSubmit" class="mt-3">
-    <div class="mb-3">
-      <label for="comment" class="form-label fw-medium">Add a comment</label>
-      <textarea
-        id="comment"
-        v-model="comment"
-        class="form-control"
-        rows="3"
-        placeholder="Write your comment…"
-        required
-      ></textarea>
+  <form @submit.prevent="onSubmit" class="comment-form">
+    <div class="divider"></div>
+    <label for="comment" class="form-label">
+      <i class="bi bi-pencil-square"></i> Leave a comment
+    </label>
+    <textarea
+      id="comment"
+      v-model="comment"
+      class="form-control"
+      rows="3"
+      placeholder="Share your thoughts…"
+      required
+    ></textarea>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-success btn-sm" :disabled="loading">
+        <i class="bi bi-send-fill me-1"></i>
+        {{ loading ? 'Posting…' : 'Post comment' }}
+      </button>
     </div>
-    <button type="submit" class="btn btn-success" :disabled="loading">
-      {{ loading ? 'Posting…' : 'Post comment' }}
-    </button>
   </form>
 </template>
 
 <style scoped>
+.comment-form {
+  margin-top: 0.5rem;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-label .bi {
+  color: var(--accent);
+}
+
 .form-control {
-  background-color: #25252D;
-  color: #e4e4e7;
+  resize: vertical;
+  min-height: 80px;
 }
 
-.form-control::placeholder {
-  color: #71717a;
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.6rem;
 }
-
 </style>
